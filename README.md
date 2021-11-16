@@ -1,4 +1,4 @@
-# catus_money_server
+# catus_money_API_server
 The api server that offers restful apis for the front end app to access the database
 
 ## Setup 

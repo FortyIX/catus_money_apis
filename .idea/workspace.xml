@@ -1,14 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="918b8501-ac1c-4d0d-9dd5-98b61a7cdaaf" name="Default Changelist" comment="added error handler for the port listening">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/db_info.txt" beforeDir="false" afterPath="$PROJECT_DIR$/db_info.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
-    </list>
+    <list default="true" id="918b8501-ac1c-4d0d-9dd5-98b61a7cdaaf" name="Default Changelist" comment="implemented the get request for the transactions" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -92,7 +85,8 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="added init codes" />
     <MESSAGE value="added error handler for the port listening" />
-    <option name="LAST_COMMIT_MESSAGE" value="added error handler for the port listening" />
+    <MESSAGE value="implemented the get request for the transactions" />
+    <option name="LAST_COMMIT_MESSAGE" value="implemented the get request for the transactions" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>

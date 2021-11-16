@@ -7,6 +7,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 type Transaction struct {
@@ -30,6 +31,33 @@ func main() {
 		c.JSON(http.StatusOK, gin.H{
 			"transactions": res,
 		})
+	})
+
+	router.POST("/addTransaction", func(c *gin.Context) {
+		id := c.Request.FormValue("id")
+		dateinfo := c.Request.FormValue("date")
+		amount := c.Request.FormValue("amount")
+		typeinfo := c.Request.FormValue("type")
+		account := c.Request.FormValue("account")
+		note := c.Request.FormValue("note")
+
+		amount_int, _ := strconv.Atoi(amount)
+
+		transaction := Transaction{
+			Id:       id,
+			DateInfo: dateinfo,
+			Amount:   amount_int,
+			Type:     typeinfo,
+			Account:  account,
+			Note:     note,
+		}
+
+		lastID := addTransaction(transaction)
+		msg := fmt.Sprintf("Insert successfully %d", lastID)
+		c.JSON(http.StatusOK, gin.H{
+			"status": msg,
+		})
+
 	})
 
 	err := router.Run(":3990")
@@ -70,4 +98,18 @@ func queryAllTransaction() (transactions []Transaction, errMsg error) {
 
 	data.Close()
 	return
+}
+
+func addTransaction(transaction Transaction) int64 {
+	data, err := db.Exec("INSERT INTO `transaction`(`id`, `date`, `amount`, `type`, `account`, `note`) VALUES (?,?,?,?,?,?)",
+		transaction.Id, transaction.DateInfo, transaction.Amount, transaction.Type, transaction.Account, transaction.Note)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	id, err := data.LastInsertId()
+	if err != nil {
+		log.Fatalln(err)
+	}
+	return id
 }

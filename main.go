@@ -13,5 +13,8 @@ func main() {
 		})
 	})
 
-	router.Run(":3990")
+	err := router.Run(":3990")
+	if err != nil {
+		return
+	}
 }

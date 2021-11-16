@@ -1,4 +1,4 @@
-name:fortyixc_money
+name:catusmon_money
 hostname:localhost
-db_account:fortyixc_admin
-pwd:M7LS6e9wlq
+db_account:catusmon_admin
+pwd:c2bfzyHa

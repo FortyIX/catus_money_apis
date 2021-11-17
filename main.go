@@ -22,6 +22,15 @@ type Transaction struct {
 	Note     string `json:"note" form:"note"`
 }
 
+
+type BankAccount struct {
+	Id string `json:"id" form:"id""`
+	Name string `json:"name" form:"name""`
+	Holder string `json:"holder" form:"holder""`
+	Balance int `json:"balance" form:"balance""`
+
+}
+
 var db *sql.DB
 
 func main() {
@@ -97,6 +106,40 @@ func main() {
 	})
 
 
+	router.GET("bankAccount/query",func(c *gin.Context){
+		res := queryAllBankAccount()
+		c.JSON(http.StatusOK,gin.H{
+			"bank_account": res,
+		})
+	})
+
+	router.POST("bankAccount/addAccount",func(c *gin.Context){
+
+		id := c.Request.FormValue("id");
+		name := c.Request.FormValue("account_name");
+		balance := c.Request.FormValue("account_balance");
+		holder := c.Request.FormValue("holder");
+
+		balance_int,_ := strconv.Atoi(balance)
+
+		newAccount := BankAccount{
+			Name: name,
+			Balance: balance_int,
+			Holder: holder,
+			Id: id,
+		}
+
+
+		lastid := addNewBankAccount(newAccount);
+		msg := fmt.Sprintf("Insert successfully %d", lastid)
+		c.JSON(http.StatusOK, gin.H{
+			"status": msg,
+		})
+
+	})
+
+
+
 
 	err := router.Run(":3990")
 	if err != nil {
@@ -161,3 +204,39 @@ func delTransaction(id string) int64 {
 	}
 	return 0
 }
+
+
+func queryAllBankAccount() (accounts []BankAccount) {
+	data, err := db.Query("SELECT * FROM `bank_account` WHERE 1")
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	for data.Next() {
+		account := BankAccount{}
+		data.Scan(&account.Name,&account.Holder,&account.Balance,&account.Id)
+		accounts = append(accounts,account)
+
+	}
+
+	return
+
+}
+
+
+func addNewBankAccount(newAccount BankAccount) int64 {
+	data,err := db.Exec("INSERT INTO `bank_account`(`account_name`, `account_holder`, `account_balance`, `account_id`) VALUES (?,?,?,?)",
+		newAccount.Name,newAccount.Holder,newAccount.Balance,newAccount.Id)
+
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	id,err := data.LastInsertId()
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	return id
+}
+

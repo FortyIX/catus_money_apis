@@ -3,19 +3,22 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
 	"log"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 type Transaction struct {
 	Id       string `json:"id" form:"id""`
-	DateInfo string `json:"data" form:"date"`
+	DateInfo string `json:"date" form:"date"`
 	Amount   int    `json:"amount" form:"amount"`
 	Type     string `json:"type" form:"type"`
 	Account  string `json:"account" form:"account"`
+	User 	 string `json:"user" form:"user"`
 	Note     string `json:"note" form:"note"`
 }
 
@@ -26,20 +29,37 @@ func main() {
 	initDbConnection()
 	router := gin.Default()
 
-	router.GET("/transactions", func(c *gin.Context) {
+
+	/// Set heaeders fro CROS
+	router.Use(cors.New(cors.Config{
+		AllowOriginFunc:  func(origin string) bool { return true },
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "PATCH"},
+		AllowHeaders:     []string{"Origin", "Content-Length", "Content-Type"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
+
+
+
+	///Query all transactions
+	router.GET("/transactions/query", func(c *gin.Context) {
+
 		res, _ := queryAllTransaction()
 		c.JSON(http.StatusOK, gin.H{
 			"transactions": res,
 		})
 	})
 
-	router.POST("/addTransaction", func(c *gin.Context) {
+	/// Add  a new transaction
+	router.POST("/transactions/add", func(c *gin.Context) {
+
 		id := c.Request.FormValue("id")
-		dateinfo := c.Request.FormValue("date")
-		amount := c.Request.FormValue("amount")
-		typeinfo := c.Request.FormValue("type")
-		account := c.Request.FormValue("account")
-		note := c.Request.FormValue("note")
+		dateinfo := c.PostForm("date")
+		amount := c.PostForm("amount")
+		typeinfo := c.PostForm("type")
+		account := c.PostForm("account")
+		user := c.PostForm("user")
+		note := c.PostForm("note")
 
 		amount_int, _ := strconv.Atoi(amount)
 
@@ -49,6 +69,7 @@ func main() {
 			Amount:   amount_int,
 			Type:     typeinfo,
 			Account:  account,
+			User:	  user,
 			Note:     note,
 		}
 
@@ -59,6 +80,23 @@ func main() {
 		})
 
 	})
+
+	router.POST("/transactions/del", func(c *gin.Context){
+		id := c.Request.FormValue("id")
+
+		res := delTransaction(id);
+		if res != 0 {
+			c.JSON(-1,gin.H{
+				"status": "deletion failed",
+			})
+		}else{
+			c.JSON(http.StatusOK,gin.H{
+				"status":"successfully deleted",
+			})
+		}
+	})
+
+
 
 	err := router.Run(":3990")
 	if err != nil {
@@ -91,7 +129,7 @@ func queryAllTransaction() (transactions []Transaction, errMsg error) {
 	}
 	for data.Next() {
 		transaction := Transaction{}
-		data.Scan(&transaction.Id, &transaction.DateInfo, &transaction.Amount, &transaction.Type, &transaction.Account, &transaction.Note)
+		data.Scan(&transaction.Id, &transaction.DateInfo, &transaction.Amount, &transaction.Type, &transaction.Account, &transaction.User,&transaction.Note)
 		fmt.Println(transaction)
 		transactions = append(transactions, transaction)
 	}
@@ -101,8 +139,8 @@ func queryAllTransaction() (transactions []Transaction, errMsg error) {
 }
 
 func addTransaction(transaction Transaction) int64 {
-	data, err := db.Exec("INSERT INTO `transaction`(`id`, `date`, `amount`, `type`, `account`, `note`) VALUES (?,?,?,?,?,?)",
-		transaction.Id, transaction.DateInfo, transaction.Amount, transaction.Type, transaction.Account, transaction.Note)
+	data, err := db.Exec("INSERT INTO `transaction`(`id`, `date`, `amount`, `type`, `account`, `user`, `note`) VALUES (?,?,?,?,?,?,?)",
+		transaction.Id, transaction.DateInfo, transaction.Amount, transaction.Type, transaction.Account, transaction.User,transaction.Note)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -112,4 +150,14 @@ func addTransaction(transaction Transaction) int64 {
 		log.Fatalln(err)
 	}
 	return id
+}
+
+
+func delTransaction(id string) int64 {
+	_,err := db.Exec("DELETE FROM `transaction` WHERE id=?",id)
+	if err != nil {
+		log.Fatalln(err)
+		return -1
+	}
+	return 0
 }

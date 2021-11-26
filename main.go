@@ -59,6 +59,7 @@ func main() {
 	}))
 
 	router.GET("account/getUserAmount", func(c *gin.Context) {
+
 		res := queryNumOfUsers()
 		c.JSON(http.StatusOK, gin.H{
 			"nUser": res,
@@ -68,6 +69,7 @@ func main() {
 	router.POST("account/adminRegister", func(c *gin.Context) {
 		username := c.Request.FormValue("username")
 		password := c.Request.FormValue("password")
+
 		role := "admin"
 		inviteKey := "null"
 
@@ -90,6 +92,7 @@ func main() {
 		password := c.Request.FormValue("password")
 		role := "user"
 		inviteKey := c.Request.FormValue("invitekey")
+		fmt.Println(password)
 
 		user := Users{
 			Username:  username,
@@ -118,7 +121,7 @@ func main() {
 
 		res := verifyLoginInfo(user)
 
-		c.JSON(http.StatusForbidden, gin.H{
+		c.JSON(http.StatusOK, gin.H{
 			"result": res,
 		})
 
@@ -180,10 +183,21 @@ func main() {
 	})
 
 	router.GET("bankAccount/query", func(c *gin.Context) {
-		res := queryAllBankAccount()
-		c.JSON(http.StatusOK, gin.H{
-			"bank_account": res,
-		})
+
+		token := c.Query("token")
+		isTokenVaild := verifyToken(token)
+
+		if isTokenVaild {
+			res := queryAllBankAccount()
+			c.JSON(http.StatusOK, gin.H{
+				"bank_account": res,
+			})
+		} else {
+			c.JSON(http.StatusForbidden, gin.H{
+				"Forbidden": "Invaild Token",
+			})
+		}
+
 	})
 
 	router.POST("bankAccount/addAccount", func(c *gin.Context) {
@@ -346,7 +360,6 @@ func queryAllTrends() (trendsData []Trends) {
 
 func registerForNormalUsers(user Users) int {
 	data, err := db.Query("SELECT `password` FROM `user` WHERE `username`= 'admin'")
-
 	admin_token := ""
 	result := 0
 	if err != nil {
@@ -360,6 +373,26 @@ func registerForNormalUsers(user Users) int {
 	if strings.Compare(user.InviteKey, admin_token) == 0 {
 		result = 1
 		registerAccount(user)
+	}
+	return result
+
+}
+
+func verifyToken(token string) bool {
+	data, err := db.Query("SELECT COUNT(`password`) FROM `user` WHERE `password`= ?", token)
+
+	counter := 0
+	result := false
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	for data.Next() {
+		data.Scan(&counter)
+	}
+
+	if counter > 0 {
+		result = true
 	}
 
 	return result

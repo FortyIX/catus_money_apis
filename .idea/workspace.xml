@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="918b8501-ac1c-4d0d-9dd5-98b61a7cdaaf" name="Default Changelist" comment="implemented the post request for adding a transactions">
+    <list default="true" id="918b8501-ac1c-4d0d-9dd5-98b61a7cdaaf" name="Default Changelist" comment="added function and apis for register and login system">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -38,6 +39,7 @@
     <property name="go.import.settings.migrated" value="true" />
     <property name="go.tried.to.enable.integration.vgo.integrator" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="restartRequiresConfirmation" value="false" />
     <property name="settings.editor.selected.configurable" value="configurable.group.editor" />
   </component>
   <component name="RunManager" selected="Go Build.go build gin">
@@ -90,7 +92,8 @@
     <MESSAGE value="added error handler for the port listening" />
     <MESSAGE value="implemented the get request for the transactions" />
     <MESSAGE value="implemented the post request for adding a transactions" />
-    <option name="LAST_COMMIT_MESSAGE" value="implemented the post request for adding a transactions" />
+    <MESSAGE value="added function and apis for register and login system" />
+    <option name="LAST_COMMIT_MESSAGE" value="added function and apis for register and login system" />
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>

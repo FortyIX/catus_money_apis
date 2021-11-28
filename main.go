@@ -169,15 +169,23 @@ func main() {
 
 	router.POST("/transactions/del", func(c *gin.Context) {
 		id := c.Request.FormValue("id")
+		token := c.Request.FormValue("token")
+		isTokenVaild := verifyToken(token)
 
-		res := delTransaction(id)
-		if res != 0 {
-			c.JSON(-1, gin.H{
-				"status": "deletion failed",
-			})
-		} else {
-			c.JSON(http.StatusOK, gin.H{
-				"status": "successfully deleted",
+		if isTokenVaild {
+			res := delTransaction(id)
+			if res != 0 {
+				c.JSON(-1, gin.H{
+					"status": "deletion failed",
+				})
+			} else {
+				c.JSON(http.StatusOK, gin.H{
+					"status": "successfully deleted",
+				})
+			}
+		}else{
+			c.JSON(http.StatusForbidden, gin.H{
+				"Forbidden": "Invaild Token",
 			})
 		}
 	})

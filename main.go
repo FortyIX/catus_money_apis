@@ -252,7 +252,7 @@ func initDbConnection() {
 
 	var err error
 
-	db, err = sql.Open("mysql", "juizeffs:dzQbQ473f0@tcp(43.240.31.71)/juizeffs_catusMoney")
+	db, err = sql.Open("mysql", "juizeffs:root@tcp(127.0.0.1)/juizeffs_catusMoney")
 	if err != nil {
 		log.Fatalln(err)
 	}
